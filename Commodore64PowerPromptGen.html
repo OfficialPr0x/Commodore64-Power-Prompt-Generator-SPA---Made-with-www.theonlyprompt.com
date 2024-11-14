@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ready2Prompt - Premium AI Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #4040ff;
+            color: #ffffff;
+        }
+        .terminal {
+            background-color: #000084;
+            border: 2px solid #ffffff;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.2);
+        }
+        .cursor {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .btn {
+            background-color: #ff0000;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #ff4040;
+            transform: translateY(-2px);
+        }
+        .output {
+            background-color: #000040;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="terminal p-6 rounded-lg">
+            <h1 class="text-4xl mb-6 text-center">READY2PROMPT v1.0</h1>
+            <p class="text-xl mb-4">PREMIUM POWER PROMPT GENERATOR</p>
+            <p class="mb-6">**** COMMODORE 64 BASIC V2 ****</p>
+            <p class="mb-4">64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+            
+            <div class="mb-6">
+                <p class="mb-2">SELECT YOUR PROMPT TYPE:</p>
+                <select id="promptType" class="w-full p-2 bg-black text-white border-2 border-white">
+                    <option value="business">BUSINESS STRATEGY</option>
+                    <option value="creative">CREATIVE WRITING</option>
+                    <option value="technical">TECHNICAL SOLUTION</option>
+                    <option value="marketing">MARKETING CAMPAIGN</option>
+                    <option value="education">EDUCATIONAL CONTENT</option>
+                </select>
+            </div>
+            
+            <div class="mb-6">
+                <p class="mb-2">ENTER YOUR TOPIC:</p>
+                <input type="text" id="topic" class="w-full p-2 bg-black text-white border-2 border-white" placeholder="READY.">
+            </div>
+            
+            <div class="mb-6">
+                <p class="mb-2">COMPLEXITY LEVEL:</p>
+                <input type="range" id="complexity" min="1" max="5" class="w-full">
+                <div class="flex justify-between text-sm">
+                    <span>BASIC</span>
+                    <span>ADVANCED</span>
+                </div>
+            </div>
+            
+            <button onclick="generatePrompt()" class="btn w-full p-3 text-white font-bold rounded mb-6">
+                GENERATE PROMPT
+            </button>
+            
+            <div class="output p-4 rounded">
+                <p class="mb-2">OUTPUT:</p>
+                <div id="result" class="whitespace-pre-wrap">
+                    READY.
+                    <span class="cursor">█</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    async function generatePrompt() {
+        const apiKey = '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'; // Secure in backend in production
+        const apiEndpoint = 'https://api.openai.com/v1/chat/completions';
+        
+        const promptType = document.getElementById('promptType').value;
+        const topic = document.getElementById('topic').value;
+        const complexity = document.getElementById('complexity').value;
+        const result = document.getElementById('result');
+
+        result.innerHTML = 'PROCESSING...';
+
+        const systemPrompt = `You are a professional ${promptType} expert. Create a detailed and powerful prompt that will generate the best possible AI response for the given topic. Complexity level: ${complexity}/5`;
+
+        try {
+            const response = await axios.post(apiEndpoint, {
+                model: 'gpt-4',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `Create a premium power prompt about: ${topic}` }
+                ]
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            result.innerHTML = response.data.choices[0].message.content + '<span class="cursor">█</span>';
+        } catch (error) {
+            result.innerHTML = `ERROR: ${error.response?.data?.error?.message || error.message}\nREADY.\n<span class="cursor">█</span>`;
+        }
+    }
+
+    document.getElementById('topic').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            generatePrompt();
+        }
+    });
+</script>
+
+</body>
+</html>
